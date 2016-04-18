@@ -16,6 +16,7 @@ public class DivideConquer {
 	class Point {
 		int nr;
 		double x, y;
+		int yp;
 
 		public Point(int nr, double x, double y) {
 			this.nr = nr;
@@ -89,7 +90,7 @@ public class DivideConquer {
 
 	void dc() {
 		Arrays.sort(points, xComp);
-		System.out.println(Math.sqrt(rec(points)));
+		System.out.printf("%.12f",Math.sqrt(rec(points)));
 	}
 
 	double rec(Point[] p) {
@@ -123,28 +124,34 @@ public class DivideConquer {
 			}
 			--j;
 			// return and merge
-			Point[] y1 = new Point[a1.length];
-			System.arraycopy(a1, 0, y1, 0, a1.length);
-			Point[] y2 = new Point[a2.length];
-			System.arraycopy(a2, 0, y2, 0, a2.length);
+			Point[] y = new Point[p.length];
+			System.arraycopy(p, 0, y, 0, p.length);
+			Arrays.sort(p, yComp);
+			for (int k = 0; k < y.length; k++) {
+				y[k].yp = k;
+			}
 			for (; i < a1.length; i++) {
-				for (int k = 0; k < y2.length; k++) {
-					if (a1[i].y - y2[k].y > min)
-						continue;
-					else if (y2[k].y - a1[i].y > min)
+				for (int k = a1[i].yp + 1; k < y.length; k++) {
+					if (y[k].y - a1[i].y > min)
 						break;
-					if (y2[k] != a1[i])
-						min = Math.min(y2[k].dist2(a1[i]), min);
+					min = Math.min(y[k].dist2(a1[i]), min);
+				}
+				for (int k = a1[i].yp - 1; k > -1; k--) {
+					if (a1[i].y - y[k].y > min)
+						break;
+					min = Math.min(y[k].dist2(a1[i]), min);
 				}
 			}
 			for (; j > -1; j--) {
-				for (int k = 0; k < y1.length; k++) {
-					if (a2[j].y - y1[k].y > min)
-						continue;
-					else if (y1[k].y - a2[j].y > min)
+				for (int k = a2[j].yp + 1; k < y.length; k++) {
+					if (y[k].y - a2[j].y > min)
 						break;
-					if (y1[k] != a2[j])
-						min = Math.min(y1[k].dist2(a2[j]), min);
+					min = Math.min(y[k].dist2(a2[j]), min);
+				}
+				for (int k = a2[j].yp - 1; k > -1; k--) {
+					if (a2[j].y - y[k].y > min)
+						break;
+					min = Math.min(y[k].dist2(a2[j]), min);
 				}
 			}
 
